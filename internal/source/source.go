@@ -8,6 +8,6 @@ import (
 
 type Source interface {
 	Name() string
-	// Verify(req *http.Request, body []byte, cfg map[string]any) error
+	Verify(req *http.Request, body []byte) error
 	Parse(req *http.Request, body []byte) (*model.Event, error)
 }
