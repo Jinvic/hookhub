@@ -4,3 +4,11 @@ sources:
     config:
       auth_type: "hmac"
       secret_key: "test-hmac-secret-for-user-webhook"
+
+targets:
+  - name: ntfy
+    type: ntfy
+    config:
+      url: "https://ntfy.sh"
+      topic: "test"
+      auth_type: "none"
