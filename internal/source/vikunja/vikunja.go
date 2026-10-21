@@ -14,7 +14,11 @@ import (
 const VikunjaSource = "vikunja"
 
 type Vikunja struct {
-	SecretKey string
+	Config *Config
+}
+
+func New(config *Config) *Vikunja {
+	return &Vikunja{Config: config}
 }
 
 func (v *Vikunja) Name() string {
@@ -22,14 +26,13 @@ func (v *Vikunja) Name() string {
 }
 
 func (v *Vikunja) Verify(req *http.Request, body []byte) error {
-	// If the secret key is not set, skip verification
-	if v.SecretKey == "" {
+	if v.Config.AuthType == AuthNone {
 		return nil
 	}
 
 	signature := req.Header.Get("X-Vikunja-Signature")
 
-	mac := hmac.New(sha256.New, []byte(v.SecretKey))
+	mac := hmac.New(sha256.New, []byte(v.Config.SecretKey))
 	mac.Write(body)
 	expectedSig := hex.EncodeToString(mac.Sum(nil))
 

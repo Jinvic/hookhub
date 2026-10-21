@@ -2,4 +2,5 @@ sources:
   - name: vikunja
     type: vikunja
     config:
+      auth_type: "hmac"
       secret_key: "test-hmac-secret-for-user-webhook"

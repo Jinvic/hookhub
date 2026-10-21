@@ -82,7 +82,8 @@ func TestVerifyHMAC(t *testing.T) {
 	req, _ := http.NewRequest(http.MethodPost, "/", nil)
 	req.Header.Set("X-Vikunja-Signature", sig)
 
-	v := &Vikunja{SecretKey: secret}
+	config := &Config{AuthType: AuthHMAC, SecretKey: secret}
+	v := New(config)
 	if err := v.Verify(req, body); err != nil {
 		t.Fatal(err)
 	}
