@@ -8,6 +8,7 @@ import (
 	"github.com/Jinvic/hookhub/internal/source/vikunja"
 	"github.com/Jinvic/hookhub/internal/target"
 	"github.com/Jinvic/hookhub/internal/target/gotify"
+	"github.com/Jinvic/hookhub/internal/target/httpout"
 	"github.com/Jinvic/hookhub/internal/target/ntfy"
 )
 
@@ -86,6 +87,15 @@ func newTarget(c TargetConfig) (target.Target, error) {
 			return nil, err
 		}
 		return gotify.New(&cfg), nil
+	case httpout.DriverHTTP:
+		var cfg httpout.Config
+		if err := decodePluginConfig(c.Config, &cfg); err != nil {
+			return nil, err
+		}
+		if err := cfg.Validate(); err != nil {
+			return nil, err
+		}
+		return httpout.New(&cfg), nil
 	default:
 		return nil, fmt.Errorf("unknown driver %q", c.Driver)
 	}

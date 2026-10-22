@@ -36,6 +36,17 @@ targets:
       url: "https://gotify.example.com"
       token: "${GOTIFY_TOKEN}" # application token → X-Gotify-Key
 
+  # 通用出站：URL 仅来自配置（防 SSRF）。json 体为固定字段 {title,message,priority,format,extra}，
+  # 不是 Discord/Slack 专用 schema；对接特定 IM 若字段不合再加专用 Target 或后续 body 模板。
+  - name: webhook-out
+    driver: http
+    config:
+      url: "https://example.com/hooks/hookhub"
+      auth_type: none # none | bearer | basic | header
+      body_format: json # plain | json
+      # token: "${HTTP_BEARER_TOKEN}"
+      # header_name: X-Custom-Token
+
 routes:
   - name: vikunja-reminder-to-ntfy
     match:

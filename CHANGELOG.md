@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-22
+
+### 新增
+
+- Target 驱动：`http` 通用出站（配置固定 URL；`body_format` plain/json；鉴权 none/bearer/basic/header；默认不跟随重定向）
+
+---
+
+### Added
+
+- Target driver: `http` generic outbound (fixed config URL; `body_format` plain/json; auth none/bearer/basic/header; redirects not followed by default)
+
 ## [0.5.0] - 2026-10-22
 
 ### 新增
