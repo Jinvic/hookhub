@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-22
+
 ### 新增
 
 - Source 驱动：Ech0（对照 [Webhook 文档](https://ech0.app/docs/guide/webhook)：HMAC 验签、`X-Ech0-Timestamp` 防重放、topic 白名单）
