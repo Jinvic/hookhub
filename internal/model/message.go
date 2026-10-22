@@ -1,10 +1,11 @@
 package model
 
+// Message is the channel-agnostic payload delivered to a Target.
+// Target-specific options (e.g. ntfy tags/click) belong in Extra.
 type Message struct {
 	Title    string
 	Body     string
-	Priority string // 供 ntfy 等使用，可选
-	Tags     []string
 	Format   string // "text" | "markdown"
+	Priority string // optional urgency hint; targets map or ignore
 	Extra    map[string]string
 }
