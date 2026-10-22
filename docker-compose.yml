@@ -1,0 +1,12 @@
+services:
+  hookhub:
+    image: jinvic/hookhub:latest
+    container_name: hookhub
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      VIKUNJA_WEBHOOK_SECRET: ${VIKUNJA_WEBHOOK_SECRET:-}
+      NTFY_TOKEN: ${NTFY_TOKEN:-}
+    restart: unless-stopped

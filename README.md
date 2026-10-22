@@ -1,45 +1,121 @@
 # HookHub
 
-> Receive webhooks from anywhere, route them anywhere.
+[English](README.en.md)
 
-可插件化的 Webhook 中间件：按 Source 验签/解析为统一 `Event`，用 YAML 路由匹配并渲染为 `Message`，再投递到 Target（如 ntfy）。
+从任意服务接收 Webhook，按规则转发到任意目标。
+
+用 Go 写的小型插件式 Webhook 中枢：YAML 配置路由，Source 验签并解析为统一 `Event`，模板渲染为 `Message`，再投递到 Target（如 ntfy）。
+
+**已实现驱动**：
+
+| 角色 | Driver | 说明 |
+| ---- | ------ | ---- |
+| Source | `vikunja` | HMAC / none；提醒与逾期等事件 |
+| Target | `ntfy` | Header 发布；none / basic / token |
+
+---
 
 ## 快速开始
 
 ```bash
 cp config.example.yaml config.yaml
-# 编辑 config.yaml，密钥用环境变量：
-#   export VIKUNJA_WEBHOOK_SECRET=...
-#   export NTFY_TOKEN=...   # 若使用 token 鉴权
+# 编辑配置，密钥放环境变量：
+export VIKUNJA_WEBHOOK_SECRET=...
+# export NTFY_TOKEN=...   # 若使用 token 鉴权
 
 go run ./cmd/hookhub -config config.yaml
+# hookhub -version
 ```
 
-- Webhook：`POST /hook/{name}`（`name` = `sources[].name`）
-- 健康检查：`GET /healthz`、`GET /readyz`
-- 调试（只记日志、不转发）：`POST /hook/{name}?debug=1`
+| 端点 | 说明 |
+| ---- | ---- |
+| `POST /hook/{name}` | Webhook 入口；`{name}` = `sources[].name`（实例名，不是 driver） |
+| `GET /healthz` / `GET /readyz` | 存活 / 就绪探针 |
+| `POST /hook/{name}?debug=1` | 仅记录 payload 预览，不转发 |
 
-## 配置要点
+默认监听地址：`server.addr`（示例为 `:8080`）。
+
+---
+
+## 配置
+
+见 [`config.example.yaml`](config.example.yaml)。密钥请用 `${ENV}` 占位。
 
 | 字段 | 含义 |
-| ------ | ------ |
-| `sources[].name` | 实例名 → URL 路径与 `Event.Source` |
-| `sources[].driver` | 插件实现（如 `vikunja`） |
-| `sources[].vars` | 模板变量（如 `base_url`），渲染时为 `.Vars` |
-| `sources[].config` | 传给 driver 的配置 |
-| `targets[].name` | 供 `routes[].actions[].target` 引用 |
-| `match.type` | 事件种类分段通配（`*` = 恰好一段） |
+| ---- | ---- |
+| `sources[].name` | 实例 ID → URL 路径与 `Event.Source` |
+| `sources[].driver` | 插件 ID（如 `vikunja`） |
+| `sources[].vars` | 模板 `.Vars`（如 `base_url`） |
+| `sources[].config` | 驱动专属配置 |
+| `targets[].name` | 供 `actions[].target` 引用 |
+| `targets[].driver` | 插件 ID（如 `ntfy`） |
+| `match.source` | 精确匹配实例名 |
+| `match.type` | 按 `.` 分段的事件类型通配（`*` = 一段） |
 
-模板上下文为 `{ Event, Vars }`，例如 `{{ .Event.Data.task.title }}`、`{{ .Vars.base_url }}`。
+**模板上下文**：`{ Event, Vars }`
+
+```text
+{{ .Event.Subject }}
+{{ .Event.Data.task.title }}
+{{ .Vars.base_url }}/tasks/{{ .Event.Data.task.id }}
+```
+
+模板缺键只导致该 Action 失败；扇出时其它 Action 继续执行。
+
+---
 
 ## 投递语义
 
-当前实现为 **at-most-once**：校验/解析成功后立即 HTTP 200，再异步转发。进程崩溃或发送失败可能丢消息；不做持久化队列。
+**At-most-once。** 校验 / 解析成功后立即返回 HTTP `200`，再异步处理。进程崩溃或发送失败可能丢消息；当前无持久化队列、无自动重试。
+
+---
+
+## Docker
+
+镜像：[`jinvic/hookhub`](https://hub.docker.com/r/jinvic/hookhub)
+
+```bash
+cp config.example.yaml config.yaml
+# 编辑 config.yaml，并导出密钥
+
+docker compose up -d
+
+# 或
+docker run --rm -p 8080:8080 \
+  -v "$PWD/config.yaml:/app/config.yaml:ro" \
+  -e VIKUNJA_WEBHOOK_SECRET \
+  jinvic/hookhub:latest
+```
+
+---
+
+## 发布
+
+推送 git 标签 `v*`（如 `v0.3.0`）会触发 GitHub Actions：
+
+1. 构建并推送多架构镜像（`linux/amd64`、`linux/arm64`）到 Docker Hub  
+   （需仓库 Secrets：`DOCKERHUB_USERNAME`、`DOCKERHUB_TOKEN`）
+2. 交叉编译二进制并创建 GitHub Release  
+   Release 说明取自 [`CHANGELOG.md`](CHANGELOG.md) 中对应版本小节（如 `## [0.3.0]`）
+
+```bash
+# 1. 更新本版本的 CHANGELOG.md
+# 2. 提交后：
+git tag v0.3.0
+git push origin v0.3.0
+```
+
+二进制命名形如 `hookhub_<version>_<os>_<arch>.tar.gz`（Windows 为 `.zip`）。
+
+---
 
 ## 开发
 
 ```bash
 go test ./...
+go run ./cmd/hookhub -config config.yaml
 ```
 
-设计文档见 [docs/draft/v0.3.md](docs/draft/v0.3.md)。
+目录结构：`cmd/hookhub`、`internal/{app,model,source,target}`。
+
+设计说明：[docs/draft/v0.3.md](docs/draft/v0.3.md)（历史草案：[v0.2](docs/draft/v0.2.md)）。
