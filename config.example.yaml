@@ -1,5 +1,6 @@
 server:
   addr: ":8080"
+  log_level: info # debug | info | warn | error
 
 sources:
   - name: vikunja
@@ -42,7 +43,7 @@ routes:
             任务：{{ .Event.Data.task.title }}
             项目：{{ .Event.Data.project.title }}
             提醒时间：{{ .Event.Data.reminder.reminder }}
-          format: markdown
+          format: text
           priority: high
           extra:
             click: "{{ .Vars.base_url }}/tasks/{{ .Event.Data.task.id }}"
@@ -54,7 +55,7 @@ routes:
     actions:
       - target: ntfy
         template:
-          title: "{{ .Event.Subject }}"
+          title: 评论通知
           body: |
             `{{ .Event.Data.payload_raw.Comment.nickname }}` 进行了评论：
             > {{ .Event.Data.payload_raw.Comment.content }}

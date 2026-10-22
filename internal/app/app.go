@@ -58,7 +58,7 @@ func (a *App) Run(ctx context.Context) error {
 
 	errCh := make(chan error, 1)
 	go func() {
-		a.log.Info("listening", "addr", a.cfg.Server.Addr)
+		a.log.Info("listening", "addr", a.cfg.Server.Addr, "routes", a.httpRoutes())
 		err := a.server.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
 			errCh <- err

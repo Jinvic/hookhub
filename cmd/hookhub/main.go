@@ -25,11 +25,17 @@ func main() {
 		return
 	}
 
-	log := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
+	bootstrap := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
 
 	cfg, err := app.LoadConfig(*configPath)
 	if err != nil {
-		log.Error("load config", "err", err)
+		bootstrap.Error("load config", "err", err)
+		os.Exit(1)
+	}
+
+	log, err := app.NewLogger(cfg.Server.LogLevel)
+	if err != nil {
+		bootstrap.Error("init logger", "err", err)
 		os.Exit(1)
 	}
 

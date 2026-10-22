@@ -34,7 +34,7 @@ go run ./cmd/hookhub -config config.yaml
 | `GET /healthz` / `GET /readyz` | 存活 / 就绪探针 |
 | `POST /hook/{name}?debug=1` | 仅记录 payload 预览，不转发 |
 
-默认监听地址：`server.addr`（示例为 `:8080`）。
+默认监听地址：`server.addr`（示例为 `:8080`）。日志级别：`server.log_level`（`debug` / `info` / `warn` / `error`，默认 `info`）。启动时会打印具体路由列表（如 `POST /hook/vikunja`）。
 
 ---
 

@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-10-22
+
+### 新增
+
+- 可配置日志级别：`server.log_level`（`debug` / `info` / `warn` / `error`）
+- 启动时打印具体 HTTP 路由列表（如 `POST /hook/vikunja`）
+- HTTP 错误路径补充 Warn 日志，避免 `http.Error` 静默返回
+
+---
+
+### Added
+
+- Configurable log level via `server.log_level` (`debug` / `info` / `warn` / `error`)
+- Startup log of concrete HTTP routes (e.g. `POST /hook/vikunja`)
+- Warn logs on HTTP error paths so `http.Error` responses are not silent
+
 ## [0.4.0] - 2026-10-22
 
 ### 新增

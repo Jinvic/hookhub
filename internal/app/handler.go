@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"sort"
 	"time"
 
 	"github.com/Jinvic/hookhub/internal/model"
@@ -23,6 +24,22 @@ func (a *App) routes() http.Handler {
 	return mux
 }
 
+// httpRoutes returns the concrete HTTP paths this process serves.
+func (a *App) httpRoutes() []string {
+	names := make([]string, 0, len(a.sources))
+	for name := range a.sources {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	out := make([]string, 0, 2+len(names))
+	out = append(out, "GET /healthz", "GET /readyz")
+	for _, name := range names {
+		out = append(out, "POST /hook/"+name)
+	}
+	return out
+}
+
 func (a *App) handleHealthz(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("ok"))
@@ -32,29 +49,32 @@ func (a *App) handleHook(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	src, ok := a.sources[name]
 	if !ok {
+		a.log.Warn("unknown source", "source", name, "status", http.StatusNotFound)
 		http.Error(w, "unknown source", http.StatusNotFound)
 		return
 	}
 
 	body, err := io.ReadAll(io.LimitReader(r.Body, maxBodyBytes+1))
 	if err != nil {
+		a.log.Warn("read body failed", "source", name, "err", err, "status", http.StatusBadRequest)
 		http.Error(w, "read body", http.StatusBadRequest)
 		return
 	}
 	if len(body) > maxBodyBytes {
+		a.log.Warn("body too large", "source", name, "size", len(body), "limit", maxBodyBytes, "status", http.StatusRequestEntityTooLarge)
 		http.Error(w, "body too large", http.StatusRequestEntityTooLarge)
 		return
 	}
 
 	if err := src.Verify(r, body); err != nil {
-		a.log.Warn("verify failed", "source", name, "err", err)
+		a.log.Warn("verify failed", "source", name, "err", err, "status", http.StatusUnauthorized)
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	event, err := src.Parse(r, body)
 	if err != nil {
-		a.log.Warn("parse failed", "source", name, "err", err)
+		a.log.Warn("parse failed", "source", name, "err", err, "status", http.StatusBadRequest)
 		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}

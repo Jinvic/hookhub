@@ -59,6 +59,17 @@ routes:
 	if _, ok := a.targets["ntfy"]; !ok {
 		t.Fatal("missing target instance")
 	}
+
+	routes := a.httpRoutes()
+	want := []string{"GET /healthz", "GET /readyz", "POST /hook/vikunja"}
+	if len(routes) != len(want) {
+		t.Fatalf("routes = %v", routes)
+	}
+	for i := range want {
+		if routes[i] != want[i] {
+			t.Fatalf("routes[%d] = %q want %q", i, routes[i], want[i])
+		}
+	}
 }
 
 func TestConfigUnknownTarget(t *testing.T) {

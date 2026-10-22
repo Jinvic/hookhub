@@ -19,7 +19,8 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Addr string `yaml:"addr"`
+	Addr     string `yaml:"addr"`
+	LogLevel string `yaml:"log_level"` // debug | info | warn | error；默认 info
 }
 
 type SourceConfig struct {

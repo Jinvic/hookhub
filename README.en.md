@@ -34,7 +34,7 @@ go run ./cmd/hookhub -config config.yaml
 | `GET /healthz` / `GET /readyz` | Liveness / readiness |
 | `POST /hook/{name}?debug=1` | Log payload preview only; do not forward |
 
-Default listen address: `server.addr` (example: `:8080`).
+Default listen address: `server.addr` (example: `:8080`). Log level: `server.log_level` (`debug` / `info` / `warn` / `error`, default `info`). On startup the process logs concrete routes (e.g. `POST /hook/vikunja`).
 
 ---
 
