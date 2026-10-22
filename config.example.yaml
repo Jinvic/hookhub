@@ -10,6 +10,15 @@ sources:
       auth_type: "hmac"
       secret_key: "${VIKUNJA_WEBHOOK_SECRET}"
 
+  - name: ech0
+    driver: ech0
+    vars:
+      base_url: "https://ech0.example.com"
+    config:
+      auth_type: "hmac"
+      secret_key: "${ECH0_WEBHOOK_SECRET}"
+      # max_skew: 300  # X-Ech0-Timestamp 允许偏差（秒）；hmac 默认 300；负值关闭
+
 targets:
   - name: ntfy
     driver: ntfy
@@ -37,3 +46,19 @@ routes:
           priority: high
           extra:
             click: "{{ .Vars.base_url }}/tasks/{{ .Event.Data.task.id }}"
+
+  - name: ech0-comment-to-ntfy
+    match:
+      source: ech0
+      type: "comment.created"
+    actions:
+      - target: ntfy
+        template:
+          title: "{{ .Event.Subject }}"
+          body: |
+            `{{ .Event.Data.payload_raw.Comment.nickname }}` 进行了评论：
+            > {{ .Event.Data.payload_raw.Comment.content }}
+          format: markdown
+          priority: default
+          extra:
+            click: "{{ .Vars.base_url }}/echo/{{ .Event.Data.payload_raw.Comment.echo_id }}"

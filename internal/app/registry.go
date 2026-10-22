@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Jinvic/hookhub/internal/source"
+	"github.com/Jinvic/hookhub/internal/source/ech0"
 	"github.com/Jinvic/hookhub/internal/source/vikunja"
 	"github.com/Jinvic/hookhub/internal/target"
 	"github.com/Jinvic/hookhub/internal/target/ntfy"
@@ -50,6 +51,15 @@ func newSource(c SourceConfig) (source.Source, error) {
 			return nil, err
 		}
 		return vikunja.New(&cfg), nil
+	case ech0.DriverEch0:
+		var cfg ech0.Config
+		if err := decodePluginConfig(c.Config, &cfg); err != nil {
+			return nil, err
+		}
+		if err := cfg.Validate(); err != nil {
+			return nil, err
+		}
+		return ech0.New(&cfg), nil
 	default:
 		return nil, fmt.Errorf("unknown driver %q", c.Driver)
 	}
