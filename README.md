@@ -121,4 +121,4 @@ go run ./cmd/hookhub -config config.yaml
 
 目录结构：`cmd/hookhub`、`internal/{app,model,source,target}`。
 
-设计说明：[docs/draft/v0.3.md](docs/draft/v0.3.md)（历史草案：[v0.2](docs/draft/v0.2.md)）。
+设计说明：[docs/draft/v0.4.md](docs/draft/v0.4.md)（历史草案：[v0.3](docs/draft/v0.3.md)、[v0.2](docs/draft/v0.2.md)）。

@@ -121,4 +121,4 @@ go run ./cmd/hookhub -config config.yaml
 
 Layout: `cmd/hookhub`, `internal/{app,model,source,target}`.
 
-Design notes: [docs/draft/v0.3.md](docs/draft/v0.3.md) (earlier draft: [v0.2](docs/draft/v0.2.md)).
+Design notes: [docs/draft/v0.4.md](docs/draft/v0.4.md) (earlier drafts: [v0.3](docs/draft/v0.3.md), [v0.2](docs/draft/v0.2.md)).
