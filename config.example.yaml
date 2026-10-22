@@ -1,13 +1,13 @@
 sources:
   - name: vikunja
-    type: vikunja
+    driver: vikunja
     config:
       auth_type: "hmac"
       secret_key: "test-hmac-secret-for-user-webhook"
 
 targets:
   - name: ntfy
-    type: ntfy
+    driver: ntfy
     config:
       url: "https://ntfy.sh"
       topic: "test"
