@@ -17,7 +17,7 @@ type fakeTarget struct {
 
 func (f *fakeTarget) Driver() string { return f.name }
 
-func (f *fakeTarget) Send(_ context.Context, msg *model.Message, _ map[string]any) error {
+func (f *fakeTarget) Send(_ context.Context, msg *model.Message) error {
 	cp := *msg
 	f.msgs = append(f.msgs, &cp)
 	return nil

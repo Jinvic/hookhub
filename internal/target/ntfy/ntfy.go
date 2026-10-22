@@ -27,7 +27,7 @@ func (n *Ntfy) Driver() string {
 	return DriverNtfy
 }
 
-func (n *Ntfy) Send(ctx context.Context, msg *model.Message, _ map[string]any) error {
+func (n *Ntfy) Send(ctx context.Context, msg *model.Message) error {
 	publishURL, err := n.publishURL()
 	if err != nil {
 		return err

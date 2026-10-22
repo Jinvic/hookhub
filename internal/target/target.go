@@ -8,5 +8,5 @@ import (
 
 type Target interface {
 	Driver() string
-	Send(ctx context.Context, msg *model.Message, cfg map[string]any) error
+	Send(ctx context.Context, msg *model.Message) error
 }

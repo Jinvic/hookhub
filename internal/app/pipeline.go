@@ -51,7 +51,7 @@ func (a *App) dispatchAction(ctx context.Context, e *model.Event, routeName stri
 		return
 	}
 
-	if err := t.Send(ctx, &msg, nil); err != nil {
+	if err := t.Send(ctx, &msg); err != nil {
 		a.log.Error("send failed",
 			"event_id", e.ID,
 			"route", routeName,

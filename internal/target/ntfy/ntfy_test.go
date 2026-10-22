@@ -39,7 +39,7 @@ func TestSendRequest(t *testing.T) {
 			"tags":  "bell,warning",
 			"click": "https://example.com",
 		},
-	}, nil)
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -84,7 +84,7 @@ func TestSendNilExtra(t *testing.T) {
 
 	n := New(&Config{URL: srv.URL, Topic: "t", AuthType: AuthNone})
 	n.Client = srv.Client()
-	if err := n.Send(context.Background(), &model.Message{Body: "x"}, nil); err != nil {
+	if err := n.Send(context.Background(), &model.Message{Body: "x"}); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -98,7 +98,7 @@ func TestSendErrorBody(t *testing.T) {
 
 	n := New(&Config{URL: srv.URL, Topic: "t", AuthType: AuthNone})
 	n.Client = srv.Client()
-	err := n.Send(context.Background(), &model.Message{Body: "x"}, nil)
+	err := n.Send(context.Background(), &model.Message{Body: "x"})
 	if err == nil || err.Error() != "ntfy 401 Unauthorized: denied" {
 		t.Fatalf("err = %v", err)
 	}
