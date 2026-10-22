@@ -7,6 +7,6 @@ import (
 )
 
 type Target interface {
-	Name() string
+	Driver() string
 	Send(ctx context.Context, msg *model.Message, cfg map[string]any) error
 }

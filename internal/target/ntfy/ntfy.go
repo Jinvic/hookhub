@@ -11,7 +11,8 @@ import (
 	"github.com/Jinvic/hookhub/internal/model"
 )
 
-const NtfyTarget = "ntfy"
+// DriverNtfy is the plugin id used in config `driver:` and Driver().
+const DriverNtfy = "ntfy"
 
 type Ntfy struct {
 	Config *Config
@@ -22,11 +23,11 @@ func New(config *Config) *Ntfy {
 	return &Ntfy{Config: config}
 }
 
-func (n *Ntfy) Name() string {
-	return NtfyTarget
+func (n *Ntfy) Driver() string {
+	return DriverNtfy
 }
 
-func (n *Ntfy) Send(ctx context.Context, msg *model.Message) error {
+func (n *Ntfy) Send(ctx context.Context, msg *model.Message, _ map[string]any) error {
 	publishURL, err := n.publishURL()
 	if err != nil {
 		return err

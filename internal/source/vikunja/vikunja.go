@@ -11,7 +11,8 @@ import (
 	"github.com/Jinvic/hookhub/internal/model"
 )
 
-const VikunjaSource = "vikunja"
+// DriverVikunja is the plugin id used in config `driver:` and Driver().
+const DriverVikunja = "vikunja"
 
 type Vikunja struct {
 	Config *Config
@@ -21,8 +22,8 @@ func New(config *Config) *Vikunja {
 	return &Vikunja{Config: config}
 }
 
-func (v *Vikunja) Name() string {
-	return VikunjaSource
+func (v *Vikunja) Driver() string {
+	return DriverVikunja
 }
 
 func (v *Vikunja) Verify(req *http.Request, body []byte) error {
@@ -56,8 +57,8 @@ func (v *Vikunja) Parse(_ *http.Request, body []byte) (*model.Event, error) {
 
 	sum := sha256.Sum256(body)
 	return &model.Event{
-		ID:      fmt.Sprintf("%s:%s:%x", VikunjaSource, p.EventName, sum[:8]),
-		Source:  VikunjaSource,
+		ID: fmt.Sprintf("%s:%s:%x", DriverVikunja, p.EventName, sum[:8]),
+		// Source is filled by the HTTP handler with the config instance name.
 		Type:    string(p.EventName),
 		Time:    p.Time,
 		Subject: subjectFor(p.EventName, data),

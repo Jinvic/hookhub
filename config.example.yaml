@@ -1,9 +1,14 @@
+server:
+  addr: ":8080"
+
 sources:
   - name: vikunja
     driver: vikunja
+    vars:
+      base_url: "https://vikunja.example.com"
     config:
       auth_type: "hmac"
-      secret_key: "test-hmac-secret-for-user-webhook"
+      secret_key: "${VIKUNJA_WEBHOOK_SECRET}"
 
 targets:
   - name: ntfy
@@ -12,3 +17,23 @@ targets:
       url: "https://ntfy.sh"
       topic: "test"
       auth_type: "none"
+      # auth_type: token
+      # token: "${NTFY_TOKEN}"
+
+routes:
+  - name: vikunja-reminder-to-ntfy
+    match:
+      source: vikunja # Event.Source = 配置实例名
+      type: "task.reminder.*" # Event.Type 分段通配
+    actions:
+      - target: ntfy
+        template:
+          title: "{{ .Event.Subject }}"
+          body: |
+            任务：{{ .Event.Data.task.title }}
+            项目：{{ .Event.Data.project.title }}
+            提醒时间：{{ .Event.Data.reminder.reminder }}
+          format: markdown
+          priority: high
+          extra:
+            click: "{{ .Vars.base_url }}/tasks/{{ .Event.Data.task.id }}"
