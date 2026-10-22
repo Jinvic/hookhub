@@ -13,6 +13,7 @@
 | Source | `vikunja` | HMAC / none；提醒与逾期等事件 |
 | Source | `ech0` | HMAC / none；`X-Ech0-*` 验签与时间窗；动态 / 评论 / 用户等 topic |
 | Target | `ntfy` | Header 发布；none / basic / token |
+| Target | `gotify` | `POST /message` + `X-Gotify-Key`；JSON extras（markdown / click 等） |
 
 ---
 

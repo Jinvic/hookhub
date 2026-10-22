@@ -30,6 +30,12 @@ targets:
       # auth_type: token
       # token: "${NTFY_TOKEN}"
 
+  - name: gotify
+    driver: gotify
+    config:
+      url: "https://gotify.example.com"
+      token: "${GOTIFY_TOKEN}" # application token → X-Gotify-Key
+
 routes:
   - name: vikunja-reminder-to-ntfy
     match:
@@ -61,5 +67,21 @@ routes:
             > {{ .Event.Data.payload_raw.Comment.content }}
           format: markdown
           priority: default
+          extra:
+            click: "{{ .Vars.base_url }}/echo/{{ .Event.Data.payload_raw.Comment.echo_id }}"
+
+  - name: ech0-comment-to-gotify
+    match:
+      source: ech0
+      type: "comment.created"
+    actions:
+      - target: gotify
+        template:
+          title: 评论通知
+          body: |
+            `{{ .Event.Data.payload_raw.Comment.nickname }}` 进行了评论：
+            > {{ .Event.Data.payload_raw.Comment.content }}
+          format: markdown
+          priority: high
           extra:
             click: "{{ .Vars.base_url }}/echo/{{ .Event.Data.payload_raw.Comment.echo_id }}"

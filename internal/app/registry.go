@@ -7,6 +7,7 @@ import (
 	"github.com/Jinvic/hookhub/internal/source/ech0"
 	"github.com/Jinvic/hookhub/internal/source/vikunja"
 	"github.com/Jinvic/hookhub/internal/target"
+	"github.com/Jinvic/hookhub/internal/target/gotify"
 	"github.com/Jinvic/hookhub/internal/target/ntfy"
 )
 
@@ -76,6 +77,15 @@ func newTarget(c TargetConfig) (target.Target, error) {
 			return nil, err
 		}
 		return ntfy.New(&cfg), nil
+	case gotify.DriverGotify:
+		var cfg gotify.Config
+		if err := decodePluginConfig(c.Config, &cfg); err != nil {
+			return nil, err
+		}
+		if err := cfg.Validate(); err != nil {
+			return nil, err
+		}
+		return gotify.New(&cfg), nil
 	default:
 		return nil, fmt.Errorf("unknown driver %q", c.Driver)
 	}

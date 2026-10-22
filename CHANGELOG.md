@@ -8,6 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-22
+
+### 新增
+
+- Target 驱动：Gotify（`POST /message`、`X-Gotify-Key`；priority 0–10；extras 映射 format / click / big_image / intent）
+
+### 变更
+
+- `Target.Send` 移除未使用的 `cfg` 参数，签名改为 `Send(ctx, msg)`
+
+---
+
+### Added
+
+- Target driver: Gotify (`POST /message`, `X-Gotify-Key`; priority 0–10; extras for format / click / big_image / intent)
+
+### Changed
+
+- `Target.Send` drops unused `cfg`; signature is now `Send(ctx, msg)`
+
 ## [0.4.1] - 2026-10-22
 
 ### 新增
