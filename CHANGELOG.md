@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-10-23
+
+### 新增
+
+- 模板函数 `formatTime`：将 RFC3339 / `time.Time` 格式化为指定 IANA 时区（默认布局 `2006-01-02 15:04`）
+- 嵌入 `time/tzdata`，保证精简镜像中亦可加载 IANA 时区
+
+---
+
+### Added
+
+- Template function `formatTime`: format RFC3339 / `time.Time` in an IANA timezone (default layout `2006-01-02 15:04`)
+- Embed `time/tzdata` so IANA timezones work in slim images
+
 ## [0.6.0] - 2026-10-22
 
 ### 新增

@@ -61,7 +61,11 @@ go run ./cmd/hookhub -config config.yaml
 {{ .Event.Subject }}
 {{ .Event.Data.task.title }}
 {{ .Vars.base_url }}/tasks/{{ .Event.Data.task.id }}
+{{ formatTime .Event.Data.reminder.reminder .Vars.timezone }}
+{{ formatTime .Event.Data.reminder.reminder "Asia/Shanghai" "2006-01-02 15:04:05" }}
 ```
+
+`formatTime` 将 RFC3339 / `time.Time` 转到指定 IANA 时区；默认布局 `2006-01-02 15:04`。时区建议放在 `sources[].vars.timezone`。
 
 模板缺键只导致该 Action 失败；扇出时其它 Action 继续执行。
 

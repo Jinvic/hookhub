@@ -61,7 +61,11 @@ See [`config.example.yaml`](config.example.yaml). Prefer `${ENV}` placeholders f
 {{ .Event.Subject }}
 {{ .Event.Data.task.title }}
 {{ .Vars.base_url }}/tasks/{{ .Event.Data.task.id }}
+{{ formatTime .Event.Data.reminder.reminder .Vars.timezone }}
+{{ formatTime .Event.Data.reminder.reminder "Asia/Shanghai" "2006-01-02 15:04:05" }}
 ```
+
+`formatTime` converts RFC3339 / `time.Time` into an IANA timezone; default layout is `2006-01-02 15:04`. Prefer `sources[].vars.timezone`.
 
 A missing template key fails that action only; other actions in a fan-out still run.
 

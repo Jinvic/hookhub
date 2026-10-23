@@ -7,6 +7,7 @@ sources:
     driver: vikunja
     vars:
       base_url: "https://vikunja.example.com"
+      timezone: "Asia/Shanghai" # 供模板 formatTime 使用
     config:
       auth_type: "hmac"
       secret_key: "${VIKUNJA_WEBHOOK_SECRET}"
@@ -59,7 +60,7 @@ routes:
           body: |
             任务：{{ .Event.Data.task.title }}
             项目：{{ .Event.Data.project.title }}
-            提醒时间：{{ .Event.Data.reminder.reminder }}
+            提醒时间：{{ formatTime .Event.Data.reminder.reminder .Vars.timezone }}
           format: text
           priority: high
           extra:

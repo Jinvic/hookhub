@@ -60,7 +60,7 @@ func execTemplate(name, text string, data any) (string, error) {
 	if text == "" {
 		return "", nil
 	}
-	tmpl, err := template.New(name).Option("missingkey=error").Parse(text)
+	tmpl, err := template.New(name).Funcs(templateFuncs()).Option("missingkey=error").Parse(text)
 	if err != nil {
 		return "", err
 	}
