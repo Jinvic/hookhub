@@ -36,6 +36,7 @@ go run ./cmd/hookhub -config config.yaml
 | `POST /hook/{name}` | Webhook ingress; `{name}` = `sources[].name` (instance id, not driver) |
 | `GET /healthz` / `GET /readyz` | Liveness / readiness |
 | `POST /hook/{name}?debug=1` | Log payload preview only; do not forward |
+| `POST /test/target/{name}` | Synchronously send a test message to a Target instance (real delivery); optional JSON `{"title","body"}` |
 
 Default listen address: `server.addr` (example: `:8080`). Log level: `server.log_level` (`debug` / `info` / `warn` / `error`, default `info`). On startup the process logs concrete routes (e.g. `POST /hook/vikunja`).
 

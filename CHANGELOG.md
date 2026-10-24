@@ -11,12 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 新增
 
 - Target 驱动：AstrBot（`POST /api/v1/im/messages`；Bearer API Key；纯文本 `message`；配置项 `umo`）
+- `POST /test/target/{name}`：同步探测 Target 连通性（真实投递测试消息；可选覆盖 title/body）
 
 ---
 
 ### Added
 
 - Target driver: AstrBot (`POST /api/v1/im/messages`; Bearer API Key; plain-text `message`; config `umo`)
+- `POST /test/target/{name}`: synchronous Target connectivity probe (sends a real test message; optional title/body override)
 
 ## [0.6.1] - 2026-10-23
 

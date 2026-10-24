@@ -61,7 +61,7 @@ routes:
 	}
 
 	routes := a.httpRoutes()
-	want := []string{"GET /healthz", "GET /readyz", "POST /hook/vikunja"}
+	want := []string{"GET /healthz", "GET /readyz", "POST /hook/vikunja", "POST /test/target/ntfy"}
 	if len(routes) != len(want) {
 		t.Fatalf("routes = %v", routes)
 	}

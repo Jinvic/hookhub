@@ -36,6 +36,7 @@ go run ./cmd/hookhub -config config.yaml
 | `POST /hook/{name}` | Webhook 入口；`{name}` = `sources[].name`（实例名，不是 driver） |
 | `GET /healthz` / `GET /readyz` | 存活 / 就绪探针 |
 | `POST /hook/{name}?debug=1` | 仅记录 payload 预览，不转发 |
+| `POST /test/target/{name}` | 向 Target 实例同步发送测试消息（会真实投递）；可选 JSON `{"title","body"}` |
 
 默认监听地址：`server.addr`（示例为 `:8080`）。日志级别：`server.log_level`（`debug` / `info` / `warn` / `error`，默认 `info`）。启动时会打印具体路由列表（如 `POST /hook/vikunja`）。
 
