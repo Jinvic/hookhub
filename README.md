@@ -15,6 +15,7 @@
 | Target | `ntfy` | Header 发布；none / basic / token |
 | Target | `gotify` | `POST /message` + `X-Gotify-Key`；JSON extras（markdown / click 等） |
 | Target | `http` | 通用出站：配置固定 URL；`plain` / `json`；none / bearer / basic / header |
+| Target | `astrbot` | `POST /api/v1/im/messages`；Bearer API Key；纯文本 `message` + 配置 `umo` |
 
 ---
 

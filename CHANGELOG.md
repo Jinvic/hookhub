@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 新增
+
+- Target 驱动：AstrBot（`POST /api/v1/im/messages`；Bearer API Key；纯文本 `message`；配置项 `umo`）
+
+---
+
+### Added
+
+- Target driver: AstrBot (`POST /api/v1/im/messages`; Bearer API Key; plain-text `message`; config `umo`)
+
 ## [0.6.1] - 2026-10-23
 
 ### 新增

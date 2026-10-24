@@ -15,6 +15,7 @@ A small, plugin-style webhook hub in Go. Configure routes in YAML: a Source veri
 | Target | `ntfy` | Header publish; none / basic / token |
 | Target | `gotify` | `POST /message` + `X-Gotify-Key`; JSON extras (markdown / click, etc.) |
 | Target | `http` | Generic outbound: fixed config URL; `plain` / `json`; none / bearer / basic / header |
+| Target | `astrbot` | `POST /api/v1/im/messages`; Bearer API Key; plain-text `message` + config `umo` |
 
 ---
 

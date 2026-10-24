@@ -48,6 +48,15 @@ targets:
       # token: "${HTTP_BEARER_TOKEN}"
       # header_name: X-Custom-Token
 
+  # AstrBot IM：POST {url}/api/v1/im/messages；API Key 需 im scope
+  # https://docs.astrbot.app/dev/openapi.html
+  - name: astrbot
+    driver: astrbot
+    config:
+      url: "https://astrbot.example.com"
+      token: "${ASTRBOT_API_KEY}"
+      umo: "webchat:FriendMessage:example"
+
 routes:
   - name: vikunja-reminder-to-ntfy
     match:
