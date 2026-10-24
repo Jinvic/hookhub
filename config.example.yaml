@@ -57,7 +57,9 @@ targets:
       token: "${ASTRBOT_API_KEY}"
       umo: "webchat:FriendMessage:example"
 
+# 下列 route 覆盖全部 source / target 实例各至少一次，可按需删减。
 routes:
+  # vikunja → ntfy
   - name: vikunja-reminder-to-ntfy
     match:
       source: vikunja # Event.Source = 配置实例名
@@ -75,22 +77,23 @@ routes:
           extra:
             click: "{{ .Vars.base_url }}/tasks/{{ .Event.Data.task.id }}"
 
-  - name: ech0-comment-to-ntfy
+  # vikunja → astrbot
+  - name: vikunja-reminder-to-astrbot
     match:
-      source: ech0
-      type: "comment.created"
+      source: vikunja
+      type: "task.reminder.*"
     actions:
-      - target: ntfy
+      - target: astrbot
         template:
-          title: 评论通知
+          title: "{{ .Event.Subject }}"
           body: |
-            `{{ .Event.Data.payload_raw.Comment.nickname }}` 进行了评论：
-            > {{ .Event.Data.payload_raw.Comment.content }}
-          format: markdown
-          priority: default
-          extra:
-            click: "{{ .Vars.base_url }}/echo/{{ .Event.Data.payload_raw.Comment.echo_id }}"
+            任务：{{ .Event.Data.task.title }}
+            项目：{{ .Event.Data.project.title }}
+            提醒时间：{{ formatTime .Event.Data.reminder.reminder .Vars.timezone }}
+            链接：{{ .Vars.base_url }}/tasks/{{ .Event.Data.task.id }}
+          format: text
 
+  # ech0 → gotify
   - name: ech0-comment-to-gotify
     match:
       source: ech0
@@ -106,3 +109,18 @@ routes:
           priority: high
           extra:
             click: "{{ .Vars.base_url }}/echo/{{ .Event.Data.payload_raw.Comment.echo_id }}"
+
+  # ech0 → http（webhook-out）
+  - name: ech0-comment-to-http
+    match:
+      source: ech0
+      type: "comment.created"
+    actions:
+      - target: webhook-out
+        template:
+          title: 评论通知
+          body: |
+            {{ .Event.Data.payload_raw.Comment.nickname }}: {{ .Event.Data.payload_raw.Comment.content }}
+            {{ .Vars.base_url }}/echo/{{ .Event.Data.payload_raw.Comment.echo_id }}
+          format: text
+          priority: default
