@@ -12,7 +12,7 @@ const DriverAstrBot = "astrbot"
 
 type Config struct {
 	URL   string `yaml:"url"`   // AstrBot base, e.g. https://astrbot.example.com
-	Token string `yaml:"token"` // API Key (Bearer / abk_…)
+	Token string `yaml:"token"` // API Key (X-API-Key / abk_…)
 	UMO   string `yaml:"umo"`   // destination session, e.g. webchat:FriendMessage:xxx
 }
 

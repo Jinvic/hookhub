@@ -45,8 +45,8 @@ func TestSendPlain(t *testing.T) {
 	if got.URL.Path != "/api/v1/im/messages" {
 		t.Fatalf("path = %s", got.URL.Path)
 	}
-	if got.Header.Get("Authorization") != "Bearer abk_test" {
-		t.Fatalf("Authorization = %q", got.Header.Get("Authorization"))
+	if got.Header.Get("X-API-Key") != "abk_test" {
+		t.Fatalf("X-API-Key = %q", got.Header.Get("X-API-Key"))
 	}
 	if ct := got.Header.Get("Content-Type"); ct != "application/json" {
 		t.Fatalf("Content-Type = %q", ct)

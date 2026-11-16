@@ -61,7 +61,7 @@ func (a *AstrBot) Send(ctx context.Context, msg *model.Message) error {
 		return fmt.Errorf("new request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+a.Config.Token)
+	req.Header.Set("X-API-Key", a.Config.Token)
 
 	client := a.Client
 	if client == nil {
