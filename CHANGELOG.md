@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-16
+
+### 修复
+
+- Docker 镜像构建注入 `main.version`，`-version` 不再恒为 `dev`
+
+---
+
+### Fixed
+
+- Inject `main.version` into Docker image builds so `-version` is no longer always `dev`
+
 ## [1.0.1] - 2026-11-16
 
 ### 变更

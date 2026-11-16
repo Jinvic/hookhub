@@ -6,12 +6,13 @@ WORKDIR /src
 # go.mod may require a newer toolchain; let the Go wrapper fetch it.
 ENV GOTOOLCHAIN=auto
 ENV CGO_ENABLED=0
+ARG VERSION=dev
 
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -trimpath -ldflags="-s -w" -o /out/hookhub ./cmd/hookhub
+RUN go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" -o /out/hookhub ./cmd/hookhub
 
 FROM gcr.io/distroless/static-debian12:nonroot
 WORKDIR /app
