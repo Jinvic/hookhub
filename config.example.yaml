@@ -59,11 +59,12 @@ targets:
 
 # 下列 route 覆盖全部 source / target 实例各至少一次，可按需删减。
 routes:
-  # vikunja → ntfy
+  # vikunja → ntfy（match.when：仅某项目；字段以真实 payload 为准）
   - name: vikunja-reminder-to-ntfy
     match:
       source: vikunja # Event.Source = 配置实例名
       type: "task.reminder.*" # Event.Type 分段通配
+      when: 'data.project.id == 2' # 可选 CEL；空 = true；变量 source/type/subject/data/vars
     actions:
       - target: ntfy
         template:
@@ -93,11 +94,12 @@ routes:
             链接：{{ .Vars.base_url }}/tasks/{{ .Event.Data.task.id }}
           format: text
 
-  # ech0 → gotify
+  # ech0 → gotify（排除某 nickname）
   - name: ech0-comment-to-gotify
     match:
       source: ech0
       type: "comment.created"
+      when: 'data.payload_raw.Comment.nickname != "bot"'
     actions:
       - target: gotify
         template:
@@ -110,13 +112,14 @@ routes:
           extra:
             click: "{{ .Vars.base_url }}/echo/{{ .Event.Data.payload_raw.Comment.echo_id }}"
 
-  # ech0 → http（webhook-out）
+  # ech0 → http（webhook-out）；action.when 可单独细控某一 target
   - name: ech0-comment-to-http
     match:
       source: ech0
       type: "comment.created"
     actions:
       - target: webhook-out
+        # when: 'data.payload_raw.Comment.nickname != "bot"'
         template:
           title: 评论通知
           body: |

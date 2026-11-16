@@ -56,6 +56,15 @@ See [`config.example.yaml`](config.example.yaml). Prefer `${ENV}` placeholders f
 | `targets[].driver` | Plugin id (e.g. `ntfy`) |
 | `match.source` | Exact instance name |
 | `match.type` | Event type glob by `.` segments (`*` = one segment) |
+| `match.when` | Optional CEL (bool); empty = true; vars `source` / `type` / `subject` / `data` / `vars` |
+| `actions[].when` | Optional CEL; skip one Target in a fan-out |
+
+Order: `source` → `type` → `match.when` → each `actions[].when`. All `when` expressions are compiled at startup (bad expr refuses boot); runtime eval errors skip that route/action.
+
+```yaml
+when: 'data.project.id == 2'
+when: 'data.payload_raw.Comment.nickname != "bot"'
+```
 
 **Template context**: `{ Event, Vars }`
 
@@ -127,4 +136,4 @@ go run ./cmd/hookhub -config config.yaml
 
 Layout: `cmd/hookhub`, `internal/{app,model,source,target}`.
 
-Design notes: [docs/draft/v0.4.md](docs/draft/v0.4.md) (earlier drafts: [v0.3](docs/draft/v0.3.md), [v0.2](docs/draft/v0.2.md)).
+Design notes: [docs/draft/v0.5.md](docs/draft/v0.5.md) (earlier drafts: [v0.4](docs/draft/v0.4.md), [v0.3](docs/draft/v0.3.md)).

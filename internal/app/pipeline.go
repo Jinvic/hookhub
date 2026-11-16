@@ -9,20 +9,65 @@ import (
 // Process matches routes for e, renders templates, and sends to targets.
 // Failures on a single action are logged and do not stop other actions.
 func (a *App) Process(ctx context.Context, e *model.Event) {
-	routes := MatchingRoutes(a.cfg.Routes, e)
-	if len(routes) == 0 {
+	vars := a.sourceVars[e.Source]
+	if vars == nil {
+		vars = map[string]string{}
+	}
+
+	matched := 0
+	for _, route := range a.cfg.Routes {
+		if !route.Match.Matches(e) {
+			continue
+		}
+
+		rp := a.whenPrograms[route.Name]
+		ok, err := model.EvalWhen(rp.match, e, vars)
+		if err != nil {
+			a.log.Warn("match.when eval failed",
+				"event_id", e.ID,
+				"route", route.Name,
+				"err", err,
+			)
+			continue
+		}
+		if !ok {
+			a.log.Info("match.when skipped",
+				"event_id", e.ID,
+				"route", route.Name,
+			)
+			continue
+		}
+		matched++
+
+		for _, action := range route.Actions {
+			ok, err := model.EvalWhen(rp.actions[action.Target], e, vars)
+			if err != nil {
+				a.log.Warn("action.when eval failed",
+					"event_id", e.ID,
+					"route", route.Name,
+					"target", action.Target,
+					"err", err,
+				)
+				continue
+			}
+			if !ok {
+				a.log.Info("action.when skipped",
+					"event_id", e.ID,
+					"route", route.Name,
+					"target", action.Target,
+				)
+				continue
+			}
+			a.dispatchAction(ctx, e, route.Name, action)
+		}
+	}
+
+	if matched == 0 {
 		a.log.Info("no matching routes",
 			"event_id", e.ID,
 			"source", e.Source,
 			"type", e.Type,
 		)
-		return
-	}
-
-	for _, route := range routes {
-		for _, action := range route.Actions {
-			a.dispatchAction(ctx, e, route.Name, action)
-		}
 	}
 }
 

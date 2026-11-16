@@ -9,10 +9,12 @@ type Route struct {
 type Match struct {
 	Source string `yaml:"source"`
 	Type   string `yaml:"type"`
+	When   string `yaml:"when"` // optional CEL; empty = true
 }
 
 type Action struct {
 	Target   string   `yaml:"target"`
+	When     string   `yaml:"when"` // optional CEL; empty = true
 	Template Template `yaml:"template"`
 }
 

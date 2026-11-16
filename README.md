@@ -56,6 +56,15 @@ go run ./cmd/hookhub -config config.yaml
 | `targets[].driver` | 插件 ID（如 `ntfy`） |
 | `match.source` | 精确匹配实例名 |
 | `match.type` | 按 `.` 分段的事件类型通配（`*` = 一段） |
+| `match.when` | 可选 CEL（bool）；空 = true；变量 `source` / `type` / `subject` / `data` / `vars` |
+| `actions[].when` | 可选 CEL；扇出时按 Action 跳过某一 Target |
+
+匹配顺序：`source` → `type` → `match.when` → 各 `actions[].when`。启动时编译全部 `when`，非法表达式拒绝启动；运行时求值失败则跳过该 route/action。
+
+```yaml
+when: 'data.project.id == 2'
+when: 'data.payload_raw.Comment.nickname != "bot"'
+```
 
 **模板上下文**：`{ Event, Vars }`
 
@@ -127,4 +136,4 @@ go run ./cmd/hookhub -config config.yaml
 
 目录结构：`cmd/hookhub`、`internal/{app,model,source,target}`。
 
-设计说明：[docs/draft/v0.4.md](docs/draft/v0.4.md)（历史草案：[v0.3](docs/draft/v0.3.md)、[v0.2](docs/draft/v0.2.md)）。
+设计说明：[docs/draft/v0.5.md](docs/draft/v0.5.md)（历史草案：[v0.4](docs/draft/v0.4.md)、[v0.3](docs/draft/v0.3.md)）。

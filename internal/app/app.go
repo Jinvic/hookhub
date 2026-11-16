@@ -7,17 +7,26 @@ import (
 	"net/http"
 	"time"
 
+	"cel.dev/cel-go/cel"
+
+	"github.com/Jinvic/hookhub/internal/model"
 	"github.com/Jinvic/hookhub/internal/source"
 	"github.com/Jinvic/hookhub/internal/target"
 )
 
+type routePrograms struct {
+	match   cel.Program            // nil if match.when empty
+	actions map[string]cel.Program // target name → program; missing/empty when = nil
+}
+
 type App struct {
-	cfg        *Config
-	sources    map[string]source.Source
-	sourceVars map[string]map[string]string // instance name → template Vars
-	targets    map[string]target.Target
-	log        *slog.Logger
-	server     *http.Server
+	cfg          *Config
+	sources      map[string]source.Source
+	sourceVars   map[string]map[string]string // instance name → template Vars
+	targets      map[string]target.Target
+	whenPrograms map[string]routePrograms // route name → compiled when programs
+	log          *slog.Logger
+	server       *http.Server
 }
 
 func New(cfg *Config, log *slog.Logger) (*App, error) {
@@ -40,13 +49,38 @@ func New(cfg *Config, log *slog.Logger) (*App, error) {
 		}
 		sourceVars[s.Name] = vars
 	}
+	whenPrograms, err := compileRouteWhens(cfg.Routes)
+	if err != nil {
+		return nil, err
+	}
 	return &App{
-		cfg:        cfg,
-		sources:    sources,
-		sourceVars: sourceVars,
-		targets:    targets,
-		log:        log,
+		cfg:          cfg,
+		sources:      sources,
+		sourceVars:   sourceVars,
+		targets:      targets,
+		whenPrograms: whenPrograms,
+		log:          log,
 	}, nil
+}
+
+func compileRouteWhens(routes []model.Route) (map[string]routePrograms, error) {
+	out := make(map[string]routePrograms, len(routes))
+	for _, r := range routes {
+		matchPrg, err := model.CompileWhen(r.Match.When)
+		if err != nil {
+			return nil, fmt.Errorf("route %q match.when: %w", r.Name, err)
+		}
+		actionPrgs := make(map[string]cel.Program, len(r.Actions))
+		for _, a := range r.Actions {
+			prg, err := model.CompileWhen(a.When)
+			if err != nil {
+				return nil, fmt.Errorf("route %q action target %q when: %w", r.Name, a.Target, err)
+			}
+			actionPrgs[a.Target] = prg
+		}
+		out[r.Name] = routePrograms{match: matchPrg, actions: actionPrgs}
+	}
+	return out, nil
 }
 
 func (a *App) Run(ctx context.Context) error {

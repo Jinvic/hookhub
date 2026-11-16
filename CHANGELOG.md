@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 新增
+
+- 可选 CEL 条件：`match.when` / `actions[].when`（`cel-go`；启动时编译；变量 `source`/`type`/`subject`/`data`/`vars`）
+
+---
+
+### Added
+
+- Optional CEL conditions: `match.when` / `actions[].when` (`cel-go`; compile at startup; vars `source`/`type`/`subject`/`data`/`vars`)
+
 ## [0.7.0] - 2026-10-24
 
 ### 新增

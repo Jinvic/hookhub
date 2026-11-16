@@ -110,10 +110,16 @@ func (c *Config) Validate() error {
 		targets[t.Name] = struct{}{}
 	}
 
+	routes := make(map[string]struct{}, len(c.Routes))
 	for _, r := range c.Routes {
 		if r.Name == "" {
 			return fmt.Errorf("routes: name is required")
 		}
+		if _, ok := routes[r.Name]; ok {
+			return fmt.Errorf("routes: duplicate name %q", r.Name)
+		}
+		routes[r.Name] = struct{}{}
+		seenTargets := make(map[string]struct{}, len(r.Actions))
 		for _, a := range r.Actions {
 			if a.Target == "" {
 				return fmt.Errorf("routes %q: action target is required", r.Name)
@@ -121,6 +127,10 @@ func (c *Config) Validate() error {
 			if _, ok := targets[a.Target]; !ok {
 				return fmt.Errorf("routes %q: unknown target %q", r.Name, a.Target)
 			}
+			if _, ok := seenTargets[a.Target]; ok {
+				return fmt.Errorf("routes %q: duplicate action target %q", r.Name, a.Target)
+			}
+			seenTargets[a.Target] = struct{}{}
 		}
 	}
 	return nil
