@@ -12,6 +12,7 @@
 | ---- | ------ | ---- |
 | Source | `vikunja` | HMAC / none；提醒与逾期等事件 |
 | Source | `ech0` | HMAC / none；`X-Ech0-*` 验签与时间窗；动态 / 评论 / 用户等 topic |
+| Source | `mox` | Authorization / none；`kind` incoming / outgoing；`incoming` 与 `outgoing.*` 事件 |
 | Target | `ntfy` | Header 发布；none / basic / token |
 | Target | `gotify` | `POST /message` + `X-Gotify-Key`；JSON extras（markdown / click 等） |
 | Target | `http` | 通用出站：配置固定 URL；`plain` / `json`；none / bearer / basic / header |

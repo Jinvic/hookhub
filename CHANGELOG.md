@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-20
+
+### 新增
+
+- Source 驱动：mox（`kind` incoming/outgoing；Authorization / none；事件 `incoming`、`outgoing.*`）
+
+---
+
+### Added
+
+- Source driver: mox (`kind` incoming/outgoing; Authorization / none; events `incoming`, `outgoing.*`)
+
 ## [1.0.2] - 2026-11-16
 
 ### 修复

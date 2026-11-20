@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jinvic/hookhub/internal/source"
 	"github.com/Jinvic/hookhub/internal/source/ech0"
+	"github.com/Jinvic/hookhub/internal/source/mox"
 	"github.com/Jinvic/hookhub/internal/source/vikunja"
 	"github.com/Jinvic/hookhub/internal/target"
 	"github.com/Jinvic/hookhub/internal/target/astrbot"
@@ -63,6 +64,15 @@ func newSource(c SourceConfig) (source.Source, error) {
 			return nil, err
 		}
 		return ech0.New(&cfg), nil
+	case mox.DriverMox:
+		var cfg mox.Config
+		if err := decodePluginConfig(c.Config, &cfg); err != nil {
+			return nil, err
+		}
+		if err := cfg.Validate(); err != nil {
+			return nil, err
+		}
+		return mox.New(&cfg), nil
 	default:
 		return nil, fmt.Errorf("unknown driver %q", c.Driver)
 	}

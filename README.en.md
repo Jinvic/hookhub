@@ -12,6 +12,7 @@ A small, plugin-style webhook hub in Go. Configure routes in YAML: a Source veri
 | ---- | ------ | ----- |
 | Source | `vikunja` | HMAC / none; reminder and overdue events |
 | Source | `ech0` | HMAC / none; `X-Ech0-*` signature and timestamp skew; echo / comment / user topics |
+| Source | `mox` | Authorization / none; `kind` incoming / outgoing; `incoming` and `outgoing.*` events |
 | Target | `ntfy` | Header publish; none / basic / token |
 | Target | `gotify` | `POST /message` + `X-Gotify-Key`; JSON extras (markdown / click, etc.) |
 | Target | `http` | Generic outbound: fixed config URL; `plain` / `json`; none / bearer / basic / header |

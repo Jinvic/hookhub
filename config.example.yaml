@@ -21,6 +21,22 @@ sources:
       secret_key: "${ECH0_WEBHOOK_SECRET}"
       # max_skew: 300  # X-Ech0-Timestamp 允许偏差（秒）；hmac 默认 300；负值关闭
 
+  # mox：账号侧 Incoming / Outgoing 各配一个 URL → 两个实例；Authorization 头值需与 mox 配置完全一致。
+  # 入站 body 受 hookhub 1MiB 上限约束（mox Text/HTML 各自可至 1MB）。
+  - name: mox-in
+    driver: mox
+    config:
+      kind: incoming
+      auth_type: authorization # authorization | none
+      authorization: "${MOX_WEBHOOK_AUTH}"
+
+  - name: mox-out
+    driver: mox
+    config:
+      kind: outgoing
+      auth_type: authorization
+      authorization: "${MOX_WEBHOOK_AUTH}"
+
 targets:
   - name: ntfy
     driver: ntfy
@@ -127,3 +143,34 @@ routes:
             {{ .Vars.base_url }}/echo/{{ .Event.Data.payload_raw.Comment.echo_id }}
           format: text
           priority: default
+
+  # mox 入站邮件 → ntfy
+  - name: mox-incoming-to-ntfy
+    match:
+      source: mox-in
+      type: incoming
+    actions:
+      - target: ntfy
+        template:
+          title: "新邮件通知: {{ .Event.Subject }}"
+          body: |
+            {{ with index .Event.Data.From 0 }}From: {{ .Address }}{{ end }}
+            Mailbox: {{ .Event.Data.Meta.MailboxName }}
+            {{ .Event.Data.Text }}
+          format: text
+          priority: default
+
+  # mox 出站失败 → ntfy
+  - name: mox-outgoing-failed-to-ntfy
+    match:
+      source: mox-out
+      type: "outgoing.failed"
+    actions:
+      - target: ntfy
+        template:
+          title: "邮件投递失败: {{ .Event.Subject }}"
+          body: |
+            {{ .Event.Data.Error }}
+            SMTP {{ .Event.Data.SMTPCode }} {{ .Event.Data.SMTPEnhancedCode }}
+          format: text
+          priority: high
