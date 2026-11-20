@@ -39,7 +39,7 @@ go run ./cmd/hookhub -config config.yaml
 | `POST /hook/{name}?debug=1` | Log payload preview only; do not forward |
 | `POST /test/target/{name}` | Synchronously send a test message to a Target instance (real delivery); optional JSON `{"title","body"}` |
 
-Default listen address: `server.addr` (example: `:8080`). Log level: `server.log_level` (`debug` / `info` / `warn` / `error`, default `info`). On startup the process logs concrete routes (e.g. `POST /hook/vikunja`).
+Default listen address: `server.addr` (example: `:8080`). Log level: `server.log_level` (`debug` / `info` / `warn` / `error`, default `info`). Inbound body limit: `server.max_body` (e.g. `512k` / `1m` / `2g`, base-1024; empty defaults to `1m`). On startup the process logs concrete routes (e.g. `POST /hook/vikunja`).
 
 ---
 

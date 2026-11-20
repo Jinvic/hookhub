@@ -1,6 +1,7 @@
 server:
   addr: ":8080"
   log_level: info # debug | info | warn | error
+  # max_body: 1m  # 入站 body 上限；空默认 1m；支持 512 / 512b / 512k / 1m / 2g（1024 进制）
 
 sources:
   - name: vikunja
@@ -22,7 +23,7 @@ sources:
       # max_skew: 300  # X-Ech0-Timestamp 允许偏差（秒）；hmac 默认 300；负值关闭
 
   # mox：账号侧 Incoming / Outgoing 各配一个 URL → 两个实例；Authorization 头值需与 mox 配置完全一致。
-  # 入站 body 受 hookhub 1MiB 上限约束（mox Text/HTML 各自可至 1MB）。
+  # 大邮件可调大 server.max_body（mox Text/HTML 各自可至 1MB）。
   - name: mox-in
     driver: mox
     config:

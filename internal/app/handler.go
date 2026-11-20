@@ -14,11 +14,17 @@ import (
 )
 
 const (
-	maxBodyBytes    = 1 << 20 // 1 MiB
 	debugBodyLogMax = 512
 	processTimeout  = 30 * time.Second
 	testTimeout     = 10 * time.Second
 )
+
+func (a *App) bodyLimit() int {
+	if a.cfg != nil && a.cfg.Server.maxBodyBytes > 0 {
+		return a.cfg.Server.maxBodyBytes
+	}
+	return defaultMaxBody
+}
 
 func (a *App) routes() http.Handler {
 	mux := http.NewServeMux()
@@ -78,14 +84,15 @@ func (a *App) handleTestTarget(w http.ResponseWriter, r *http.Request) {
 		Body:  fmt.Sprintf("connectivity check at %s", time.Now().UTC().Format(time.RFC3339)),
 	}
 
-	body, err := io.ReadAll(io.LimitReader(r.Body, maxBodyBytes+1))
+	limit := a.bodyLimit()
+	body, err := io.ReadAll(io.LimitReader(r.Body, int64(limit)+1))
 	if err != nil {
 		a.log.Warn("read test body failed", "target", name, "err", err, "status", http.StatusBadRequest)
 		http.Error(w, "read body", http.StatusBadRequest)
 		return
 	}
-	if len(body) > maxBodyBytes {
-		a.log.Warn("test body too large", "target", name, "size", len(body), "status", http.StatusRequestEntityTooLarge)
+	if len(body) > limit {
+		a.log.Warn("test body too large", "target", name, "size", len(body), "limit", limit, "status", http.StatusRequestEntityTooLarge)
 		http.Error(w, "body too large", http.StatusRequestEntityTooLarge)
 		return
 	}
@@ -127,14 +134,15 @@ func (a *App) handleHook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := io.ReadAll(io.LimitReader(r.Body, maxBodyBytes+1))
+	limit := a.bodyLimit()
+	body, err := io.ReadAll(io.LimitReader(r.Body, int64(limit)+1))
 	if err != nil {
 		a.log.Warn("read body failed", "source", name, "err", err, "status", http.StatusBadRequest)
 		http.Error(w, "read body", http.StatusBadRequest)
 		return
 	}
-	if len(body) > maxBodyBytes {
-		a.log.Warn("body too large", "source", name, "size", len(body), "limit", maxBodyBytes, "status", http.StatusRequestEntityTooLarge)
+	if len(body) > limit {
+		a.log.Warn("body too large", "source", name, "size", len(body), "limit", limit, "status", http.StatusRequestEntityTooLarge)
 		http.Error(w, "body too large", http.StatusRequestEntityTooLarge)
 		return
 	}

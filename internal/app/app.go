@@ -33,6 +33,13 @@ func New(cfg *Config, log *slog.Logger) (*App, error) {
 	if log == nil {
 		log = slog.Default()
 	}
+	if cfg.Server.maxBodyBytes == 0 {
+		n, err := parseMaxBody(cfg.Server.MaxBody)
+		if err != nil {
+			return nil, fmt.Errorf("server.max_body: %w", err)
+		}
+		cfg.Server.maxBodyBytes = n
+	}
 	sources, err := buildSources(cfg.Sources)
 	if err != nil {
 		return nil, err

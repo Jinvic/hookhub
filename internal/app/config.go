@@ -21,6 +21,9 @@ type Config struct {
 type ServerConfig struct {
 	Addr     string `yaml:"addr"`
 	LogLevel string `yaml:"log_level"` // debug | info | warn | error；默认 info
+	MaxBody  string `yaml:"max_body"`  // e.g. 512k / 1m / 2g；空 = 1m（1024 进制）
+	// maxBodyBytes is resolved from MaxBody at load time.
+	maxBodyBytes int
 }
 
 type SourceConfig struct {
@@ -61,6 +64,11 @@ func LoadConfig(path string) (*Config, error) {
 	if cfg.Server.Addr == "" {
 		cfg.Server.Addr = ":8080"
 	}
+	n, err := parseMaxBody(cfg.Server.MaxBody)
+	if err != nil {
+		return nil, fmt.Errorf("server.max_body: %w", err)
+	}
+	cfg.Server.maxBodyBytes = n
 	if err := cfg.Validate(); err != nil {
 		return nil, err
 	}

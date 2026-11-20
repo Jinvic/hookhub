@@ -72,6 +72,65 @@ routes:
 	}
 }
 
+func TestLoadConfigMaxBody(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "config.yaml")
+	content := `
+server:
+  addr: ":0"
+  max_body: 2m
+sources:
+  - name: vikunja
+    driver: vikunja
+    config:
+      auth_type: none
+targets:
+  - name: ntfy
+    driver: ntfy
+    config:
+      url: https://ntfy.sh
+      topic: test
+      auth_type: none
+`
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := LoadConfig(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.Server.maxBodyBytes != 2<<20 {
+		t.Fatalf("maxBodyBytes = %d", cfg.Server.maxBodyBytes)
+	}
+}
+
+func TestLoadConfigMaxBodyInvalid(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "config.yaml")
+	content := `
+server:
+  max_body: 1x
+sources:
+  - name: vikunja
+    driver: vikunja
+    config:
+      auth_type: none
+targets:
+  - name: ntfy
+    driver: ntfy
+    config:
+      url: https://ntfy.sh
+      topic: test
+      auth_type: none
+`
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := LoadConfig(path); err == nil {
+		t.Fatal("expected error")
+	}
+}
+
 func TestConfigUnknownTarget(t *testing.T) {
 	cfg := &Config{
 		Sources: []SourceConfig{{Name: "s", Driver: "vikunja"}},

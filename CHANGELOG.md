@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-20
+
+### 新增
+
+- `server.max_body`：可读入站 body 上限（如 `512k` / `1m` / `2g`；空默认 `1m`）
+
+---
+
+### Added
+
+- `server.max_body`: human-readable inbound body limit (e.g. `512k` / `1m` / `2g`; empty defaults to `1m`)
+
 ## [1.1.0] - 2026-11-20
 
 ### 新增
